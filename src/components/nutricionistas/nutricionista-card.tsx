@@ -2,18 +2,7 @@ import Link from "next/link";
 import { Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-
-export type Nutricionista = {
-  nome: string;
-  crn: string;
-  modalidade: "Online" | "Presencial";
-  cidade: string;
-  especialidades: string[];
-  nota: number;
-  avaliacoes: number;
-  preco: number;
-  slug: string;
-};
+import type { Nutricionista } from "@/lib/types";
 
 function getInitials(name: string) {
   const parts = name.split(" ");

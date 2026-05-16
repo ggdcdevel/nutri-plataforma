@@ -9,7 +9,7 @@ import {
   ProfileAvaliacoes,
 } from "@/components/nutricionistas/profile-sections";
 import { ProfileSidebar } from "@/components/nutricionistas/profile-sidebar";
-import { nutricionistasProfiles } from "@/data/nutricionistas-profiles";
+import { getNutricionistaBySlug } from "@/lib/queries/nutricionistas";
 
 export default async function NutricionistaProfilePage({
   params,
@@ -17,7 +17,7 @@ export default async function NutricionistaProfilePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const nutri = nutricionistasProfiles[slug];
+  const nutri = await getNutricionistaBySlug(slug);
 
   if (!nutri) {
     notFound();

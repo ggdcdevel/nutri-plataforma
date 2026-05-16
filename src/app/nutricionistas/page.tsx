@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import NutricionistasListing from "@/components/nutricionistas/nutricionistas-listing";
+import { getNutricionistas } from "@/lib/queries/nutricionistas";
 
 export const metadata: Metadata = {
   title: "Nutricionistas - NutriMatch",
@@ -9,7 +10,9 @@ export const metadata: Metadata = {
     "Encontre nutricionistas verificados. Filtre por especialidade, modalidade, cidade e avaliação.",
 };
 
-export default function NutricionistasPage() {
+export default async function NutricionistasPage() {
+  const nutricionistas = await getNutricionistas();
+
   return (
     <div className="flex min-h-screen flex-col bg-nutri-surface">
       <Navbar />
@@ -23,7 +26,7 @@ export default function NutricionistasPage() {
             objetivos.
           </p>
         </div>
-        <NutricionistasListing />
+        <NutricionistasListing nutricionistas={nutricionistas} />
       </main>
       <Footer />
     </div>

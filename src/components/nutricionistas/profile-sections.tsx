@@ -1,6 +1,6 @@
 import { Star, GraduationCap, Briefcase, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import type { NutricionistaProfile } from "@/data/nutricionistas-profiles";
+import type { NutricionistaProfile } from "@/lib/types";
 
 function getInitials(name: string) {
   const parts = name.split(" ");
