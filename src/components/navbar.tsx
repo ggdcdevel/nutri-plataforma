@@ -31,12 +31,14 @@ export default function Navbar() {
           <Button variant="outline" size="sm">
             Entrar
           </Button>
-          <Button
-            size="sm"
-            className="bg-nutri-green text-white hover:bg-nutri-green-dark"
-          >
-            Encontrar nutricionista
-          </Button>
+          <a href="/nutricionistas">
+            <Button
+              size="sm"
+              className="bg-nutri-green text-white hover:bg-nutri-green-dark"
+            >
+              Encontrar nutricionista
+            </Button>
+          </a>
         </div>
 
         {/* Mobile toggle */}
@@ -74,12 +76,14 @@ export default function Navbar() {
             <Button variant="outline" size="sm" className="w-full">
               Entrar
             </Button>
-            <Button
-              size="sm"
-              className="w-full bg-nutri-green text-white hover:bg-nutri-green-dark"
-            >
-              Encontrar nutricionista
-            </Button>
+            <a href="/nutricionistas">
+              <Button
+                size="sm"
+                className="w-full bg-nutri-green text-white hover:bg-nutri-green-dark"
+              >
+                Encontrar nutricionista
+              </Button>
+            </a>
           </div>
         </div>
       )}

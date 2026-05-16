@@ -30,9 +30,11 @@ export default function Hero() {
             className="w-full py-3.5 text-sm text-nutri-text placeholder:text-nutri-muted focus:outline-none"
           />
         </div>
-        <Button className="h-full rounded-none bg-nutri-green px-6 text-white hover:bg-nutri-green-dark">
-          Buscar
-        </Button>
+        <a href="/nutricionistas" className="h-full">
+          <Button className="h-full rounded-none bg-nutri-green px-6 text-white hover:bg-nutri-green-dark">
+            Buscar
+          </Button>
+        </a>
       </div>
 
       {/* Tags */}
