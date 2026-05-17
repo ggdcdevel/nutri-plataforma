@@ -16,6 +16,26 @@ export type AvaliacaoDetalhada = {
 export type Database = {
   public: {
     Tables: {
+      leads_nutricionistas: {
+        Row: {
+          id: string;
+          nome: string;
+          email: string;
+          whatsapp: string;
+          crn: string;
+          cidade: string;
+          modalidade: string;
+          especialidades: string[];
+          status: string;
+          created_at: string;
+        };
+        Insert: Omit<Database["public"]["Tables"]["leads_nutricionistas"]["Row"], "id" | "created_at" | "status"> & {
+          id?: string;
+          created_at?: string;
+          status?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["leads_nutricionistas"]["Insert"]>;
+      };
       nutricionistas: {
         Row: {
           id: string;
