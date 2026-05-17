@@ -60,7 +60,8 @@ export default function CadastroNutricionista() {
     setLoading(true);
     setError("");
 
-    const { error: err } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error: err } = await (supabase as any)
       .from("leads_nutricionistas")
       .insert({
         nome: form.nome,

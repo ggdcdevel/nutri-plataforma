@@ -43,17 +43,19 @@ export type Database = {
           origem?: string;
           created_at?: string;
         };
-        Update: Partial<{
-          nome: string;
-          email: string;
-          whatsapp: string;
-          crn: string;
-          cidade: string;
-          modalidade: string;
-          especialidades: string[];
-          status: string;
-          origem: string;
-        }>;
+        Update: {
+          id?: string;
+          nome?: string;
+          email?: string;
+          whatsapp?: string;
+          crn?: string;
+          cidade?: string;
+          modalidade?: string;
+          especialidades?: string[];
+          status?: string;
+          origem?: string;
+          created_at?: string;
+        };
       };
       nutricionistas: {
         Row: {
@@ -78,11 +80,50 @@ export type Database = {
           avaliacoes_detalhadas: AvaliacaoDetalhada[];
           created_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["nutricionistas"]["Row"], "id" | "created_at"> & {
+        Insert: {
           id?: string;
+          nome: string;
+          crn: string;
+          cidade: string;
+          estado: string;
+          modalidade: "Online" | "Presencial";
+          especialidades: string[];
+          nota: number;
+          avaliacoes: number;
+          preco: number;
+          slug: string;
+          bio?: string | null;
+          formacao?: string | null;
+          universidade?: string | null;
+          experiencia_anos?: number | null;
+          atendimentos?: number | null;
+          idiomas: string[];
+          membro_desde?: number | null;
+          avaliacoes_detalhadas: AvaliacaoDetalhada[];
           created_at?: string;
         };
-        Update: Partial<Database["public"]["Tables"]["nutricionistas"]["Insert"]>;
+        Update: {
+          id?: string;
+          nome?: string;
+          crn?: string;
+          cidade?: string;
+          estado?: string;
+          modalidade?: "Online" | "Presencial";
+          especialidades?: string[];
+          nota?: number;
+          avaliacoes?: number;
+          preco?: number;
+          slug?: string;
+          bio?: string | null;
+          formacao?: string | null;
+          universidade?: string | null;
+          experiencia_anos?: number | null;
+          atendimentos?: number | null;
+          idiomas?: string[];
+          membro_desde?: number | null;
+          avaliacoes_detalhadas?: AvaliacaoDetalhada[];
+          created_at?: string;
+        };
       };
     };
   };
