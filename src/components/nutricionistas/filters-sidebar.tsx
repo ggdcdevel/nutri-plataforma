@@ -78,7 +78,7 @@ export default function FiltersSidebar({
       if (cidade) {
         onChange({ ...filters, localizacao: cidade });
       } else {
-        setErroGeo("Não foi possível identificar sua cidade.");
+        setErroGeo("Cidade não identificada. Digite manualmente.");
       }
     } catch {
       setErroGeo("Permissão negada. Digite sua cidade manualmente.");
@@ -184,50 +184,40 @@ export default function FiltersSidebar({
           <p className="mt-0.5 text-xs text-muted-foreground">
             {"Online atendem qualquer cidade · Presencial filtra pela sua cidade"}
           </p>
-
-          {filters.localizacao ? (
-            <div className="mt-2 flex items-center gap-2 rounded-lg border border-nutri-green/30 bg-nutri-green/5 px-3 py-2">
-              <LocateFixed className="h-4 w-4 shrink-0 text-nutri-green" />
-              <span className="flex-1 truncate text-sm text-foreground">
-                {filters.localizacao}
-              </span>
-              <button
-                onClick={() => onChange({ ...filters, localizacao: "" })}
-                className="text-muted-foreground transition-colors hover:text-foreground"
-                aria-label="Limpar localização"
-              >
-                <X className="h-4 w-4" />
-              </button>
+          <div className="mt-2 flex flex-col gap-2">
+            <button
+              onClick={detectarLocalizacao}
+              disabled={detectando}
+              className="flex items-center justify-center gap-2 rounded-lg border border-dashed border-nutri-green/40 py-2 text-sm text-nutri-green transition-colors hover:bg-nutri-green/5 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {detectando ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <LocateFixed className="h-4 w-4" />
+              )}
+              {detectando ? "Detectando..." : "Usar minha localização"}
+            </button>
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Ex: São Paulo"
+                value={filters.localizacao}
+                onChange={(e) =>
+                  onChange({ ...filters, localizacao: e.target.value })
+                }
+                className="pl-8 pr-8"
+              />
+              {filters.localizacao && (
+                <button
+                  onClick={() => onChange({ ...filters, localizacao: "" })}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+                  aria-label="Limpar localização"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
             </div>
-          ) : (
-            <div className="mt-2 flex flex-col gap-2">
-              <button
-                onClick={detectarLocalizacao}
-                disabled={detectando}
-                className="flex items-center justify-center gap-2 rounded-lg border border-dashed border-nutri-green/40 py-2 text-sm text-nutri-green transition-colors hover:bg-nutri-green/5 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {detectando ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <LocateFixed className="h-4 w-4" />
-                )}
-                {detectando ? "Detectando..." : "Usar minha localização"}
-              </button>
-
-              <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder="Ex: São Paulo"
-                  value={filters.localizacao}
-                  onChange={(e) =>
-                    onChange({ ...filters, localizacao: e.target.value })
-                  }
-                  className="pl-8"
-                />
-              </div>
-            </div>
-          )}
-
+          </div>
           {erroGeo && (
             <p className="mt-1.5 text-xs text-red-500">{erroGeo}</p>
           )}

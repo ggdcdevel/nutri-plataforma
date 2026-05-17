@@ -1,23 +1,41 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Search } from "lucide-react";
 
 const tags = [
   "Emagrecimento",
-  "Nutricao esportiva",
+  "Nutrição esportiva",
   "Vegetarianismo",
   "Diabetes",
-  "Gestacao",
+  "Gestação",
 ];
 
 export default function Hero() {
+  const [busca, setBusca] = useState("");
+  const router = useRouter();
+
+  function handleBusca() {
+    const q = busca.trim();
+    router.push(
+      q ? `/nutricionistas?busca=${encodeURIComponent(q)}` : "/nutricionistas"
+    );
+  }
+
+  function handleTag(tag: string) {
+    router.push(`/nutricionistas?busca=${encodeURIComponent(tag)}`);
+  }
+
   return (
     <section className="flex flex-col items-center px-6 pb-20 pt-32 text-center md:pt-40 md:pb-28">
       <h1 className="max-w-3xl text-4xl font-bold leading-tight tracking-tight text-nutri-text text-balance md:text-5xl lg:text-6xl">
         Encontre seu nutricionista ideal, online ou presencial
       </h1>
       <p className="mt-5 max-w-xl text-lg leading-relaxed text-nutri-muted text-pretty">
-        Conectamos voce a profissionais verificados em todo o Brasil.
+        Conectamos você a profissionais verificados em todo o Brasil.
       </p>
 
       {/* Search bar */}
@@ -27,14 +45,18 @@ export default function Hero() {
           <input
             type="text"
             placeholder="Busque por especialidade ou cidade..."
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleBusca()}
             className="w-full py-3.5 text-sm text-nutri-text placeholder:text-nutri-muted focus:outline-none"
           />
         </div>
-        <a href="/nutricionistas" className="h-full">
-          <Button className="h-full rounded-none bg-nutri-green px-6 text-white hover:bg-nutri-green-dark">
-            Buscar
-          </Button>
-        </a>
+        <Button
+          onClick={handleBusca}
+          className="h-full rounded-none bg-nutri-green px-6 text-white hover:bg-nutri-green-dark"
+        >
+          Buscar
+        </Button>
       </div>
 
       {/* Tags */}
@@ -43,6 +65,7 @@ export default function Hero() {
           <Badge
             key={tag}
             variant="secondary"
+            onClick={() => handleTag(tag)}
             className="cursor-pointer px-3.5 py-1.5 text-sm font-normal text-nutri-muted transition-colors hover:bg-nutri-green/10 hover:text-nutri-green"
           >
             {tag}

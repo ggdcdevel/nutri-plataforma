@@ -30,11 +30,13 @@ function norm(str: string) {
 
 export default function NutricionistasListing({
   nutricionistas,
+  initialBusca = "",
 }: {
   nutricionistas: Nutricionista[];
+  initialBusca?: string;
 }) {
   const [filters, setFilters] = useState<Filters>(defaultFilters);
-  const [busca, setBusca] = useState("");
+  const [busca, setBusca] = useState(initialBusca);
   const [ordenacao, setOrdenacao] = useState<Ordenacao>("relevantes");
 
   const filtered = useMemo(() => {
@@ -73,8 +75,7 @@ export default function NutricionistasListing({
     if (filters.localizacao.trim()) {
       const locQ = norm(filters.localizacao);
       result = result.filter(
-        (n) =>
-          n.modalidade === "Online" || norm(n.cidade).includes(locQ)
+        (n) => n.modalidade === "Online" || norm(n.cidade).includes(locQ)
       );
     }
 

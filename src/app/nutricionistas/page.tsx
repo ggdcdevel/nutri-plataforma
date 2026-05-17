@@ -10,7 +10,12 @@ export const metadata: Metadata = {
     "Encontre nutricionistas verificados. Filtre por especialidade, modalidade, cidade e avaliação.",
 };
 
-export default async function NutricionistasPage() {
+export default async function NutricionistasPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ busca?: string }>;
+}) {
+  const { busca } = await searchParams;
   const nutricionistas = await getNutricionistas();
 
   return (
@@ -26,7 +31,10 @@ export default async function NutricionistasPage() {
             objetivos.
           </p>
         </div>
-        <NutricionistasListing nutricionistas={nutricionistas} />
+        <NutricionistasListing
+          nutricionistas={nutricionistas}
+          initialBusca={busca ?? ""}
+        />
       </main>
       <Footer />
     </div>
