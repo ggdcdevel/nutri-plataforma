@@ -339,10 +339,108 @@ Para subir o servidor: `pnpm dev` na raiz do projeto.
 
 ---
 
+## T24 — Página de cadastro para nutricionistas carrega corretamente
+
+**URL:** `http://localhost:3000/cadastro-nutricionista`
+
+**Verificar:**
+- [ ] Navbar simplificada: logo "NutriMatch" e link "Já sou cadastrado — Entrar" visíveis
+- [ ] Badge "Lista de espera aberta" visível no hero
+- [ ] Headline "Leve sua agenda para o próximo nível" visível
+- [ ] Botão "Quero me cadastrar" presente no hero
+- [ ] 3 cards de benefícios visíveis (Perfil gratuito, Pacientes online e presencial, Visibilidade)
+- [ ] Faixa verde com 3 números (200+, 5.000+, 4.9★) visível
+- [ ] Formulário com todos os campos presente
+- [ ] Footer "© 2025 NutriMatch" visível
+
+---
+
+## T25 — Botão âncora do hero rola até o formulário
+
+**URL:** `http://localhost:3000/cadastro-nutricionista`
+
+**Passos:**
+1. Clicar em "Quero me cadastrar" no hero
+
+**Verificar:**
+- [ ] Página rola até a seção com id="formulario"
+- [ ] Formulário fica visível na tela
+
+---
+
+## T26 — Formulário valida campos obrigatórios
+
+**URL:** `http://localhost:3000/cadastro-nutricionista#formulario`
+
+**Passos:**
+1. Clicar em "Quero me cadastrar gratuitamente" sem preencher nada
+
+**Verificar:**
+- [ ] Formulário não submete
+- [ ] Browser destaca o primeiro campo obrigatório vazio
+
+---
+
+## T27 — Máscara de WhatsApp
+
+**URL:** `http://localhost:3000/cadastro-nutricionista#formulario`
+
+**Passos:**
+1. Digitar `11999998888` no campo WhatsApp
+
+**Verificar:**
+- [ ] Campo exibe `(11) 99999-8888` automaticamente
+- [ ] Digitar letras não tem efeito (apenas dígitos aceitos)
+
+---
+
+## T28 — Envio do formulário salva no Supabase
+
+**URL:** `http://localhost:3000/cadastro-nutricionista`
+
+**Pré-requisito:** migration `004_create_leads_nutricionistas.sql` e `005_add_origem.sql` aplicadas no Supabase
+
+**Passos:**
+1. Preencher todos os campos obrigatórios com dados válidos
+2. Marcar ao menos uma especialidade
+3. Clicar em "Quero me cadastrar gratuitamente"
+
+**Verificar:**
+- [ ] Botão mostra "Enviando..." durante o envio
+- [ ] Formulário é substituído pela mensagem de sucesso: "Cadastro recebido!"
+- [ ] Texto "Entraremos em contato em até 48h pelo WhatsApp." visível
+- [ ] No Supabase (tabela `leads_nutricionistas`): registro inserido com todos os campos corretos
+- [ ] Campo `status` = `aguardando`
+- [ ] Campo `origem` = `direto` (sem parâmetro na URL)
+
+---
+
+## T29 — Campo origem capturado da URL
+
+**URL:** `http://localhost:3000/cadastro-nutricionista?origem=instagram_ads`
+
+**Passos:**
+1. Preencher e enviar o formulário
+
+**Verificar:**
+- [ ] No Supabase: campo `origem` = `instagram_ads`
+
+---
+
+## T30 — Links de acesso à página de cadastro
+
+**Verificar:**
+- [ ] Navbar em `http://localhost:3000/` → link "Para nutricionistas" aponta para `/cadastro-nutricionista?origem=navbar`
+- [ ] Seção "Você é nutricionista?" na home → botão "Cadastre-se como profissional" aponta para `/cadastro-nutricionista?origem=organico`
+- [ ] Footer na home → link "Para nutricionistas" aponta para `/cadastro-nutricionista?origem=footer`
+
+---
+
 ## Notas de ambiente
 
 - Banco de dados: Supabase — requer variáveis `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY` em `.env.local`
 - Total de nutricionistas no banco: 30 (requer migration `003_add_estado.sql` aplicada para exibir estado)
+- Página de cadastro requer migrations `004_create_leads_nutricionistas.sql` e `005_add_origem.sql` aplicadas para que o formulário salve corretamente
 - Auto-detect de localização (GPS) não funciona em preview headless — testar manualmente no browser real
 - O filtro de modalidade e o filtro de localização são independentes: selecionar "Online" mostra online de qualquer cidade; localização filtra por cidade independente de modalidade
 - Autocomplete de cidade usa lista estática de ~70 cidades brasileiras (`src/lib/cidades.ts`) — cidades fora da lista ainda podem ser digitadas manualmente e o filtro funciona normalmente
