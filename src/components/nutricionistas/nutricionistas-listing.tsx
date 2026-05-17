@@ -12,17 +12,21 @@ type Filters = {
   modalidade: string;
   especialidades: string[];
   avaliacaoMinima: string;
-  cidade: string;
+  localizacao: string;
 };
 
 const defaultFilters: Filters = {
   modalidade: "Todos",
   especialidades: [],
   avaliacaoMinima: "0",
-  cidade: "",
+  localizacao: "",
 };
 
 type Ordenacao = "relevantes" | "avaliados" | "preco";
+
+function norm(str: string) {
+  return str.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+}
 
 export default function NutricionistasListing({
   nutricionistas,
@@ -36,35 +40,45 @@ export default function NutricionistasListing({
   const filtered = useMemo(() => {
     let result = [...nutricionistas];
 
+    // Busca por nome, especialidade ou cidade — com normalização de acentos
     if (busca.trim()) {
-      const q = busca.toLowerCase();
+      const q = norm(busca);
       result = result.filter(
         (n) =>
-          n.nome.toLowerCase().includes(q) ||
-          n.especialidades.some((e) => e.toLowerCase().includes(q))
+          norm(n.nome).includes(q) ||
+          norm(n.cidade).includes(q) ||
+          n.especialidades.some((e) => norm(e).includes(q))
       );
     }
 
+    // Modalidade
     if (filters.modalidade !== "Todos") {
       result = result.filter((n) => n.modalidade === filters.modalidade);
     }
 
+    // Especialidades
     if (filters.especialidades.length > 0) {
       result = result.filter((n) =>
         filters.especialidades.some((e) => n.especialidades.includes(e))
       );
     }
 
+    // Avaliação mínima
     const minRating = parseFloat(filters.avaliacaoMinima);
     if (minRating > 0) {
       result = result.filter((n) => n.nota >= minRating);
     }
 
-    if (filters.cidade.trim()) {
-      const cidadeQ = filters.cidade.toLowerCase();
-      result = result.filter((n) => n.cidade.toLowerCase().includes(cidadeQ));
+    // Localização: online sempre aparece, presencial só se cidade bater
+    if (filters.localizacao.trim()) {
+      const locQ = norm(filters.localizacao);
+      result = result.filter(
+        (n) =>
+          n.modalidade === "Online" || norm(n.cidade).includes(locQ)
+      );
     }
 
+    // Ordenação
     if (ordenacao === "avaliados") {
       result.sort((a, b) => b.nota - a.nota);
     } else if (ordenacao === "preco") {
@@ -81,21 +95,22 @@ export default function NutricionistasListing({
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-6 py-6 lg:flex-row">
-      {/* Sidebar */}
       <FiltersSidebar
         filters={filters}
         onChange={setFilters}
-        onClear={() => setFilters(defaultFilters)}
+        onClear={() => {
+          setFilters(defaultFilters);
+          setBusca("");
+        }}
       />
 
-      {/* Main content */}
       <div className="flex-1">
         {/* Search bar + sort */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Buscar por nome ou especialidade..."
+              placeholder="Buscar por nome, especialidade ou cidade..."
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
               className="h-10 pl-9 text-sm"

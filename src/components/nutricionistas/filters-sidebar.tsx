@@ -1,13 +1,14 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { useState } from "react";
+import { Search, LocateFixed, Loader2, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 type Filters = {
   modalidade: string;
   especialidades: string[];
   avaliacaoMinima: string;
-  cidade: string;
+  localizacao: string;
 };
 
 interface FiltersSidebarProps {
@@ -31,15 +32,17 @@ export default function FiltersSidebar({
   onChange,
   onClear,
 }: FiltersSidebarProps) {
+  const [detectando, setDetectando] = useState(false);
+  const [erroGeo, setErroGeo] = useState("");
+
   function handleModalidade(value: string) {
     onChange({ ...filters, modalidade: value });
   }
 
   function handleEspecialidade(value: string) {
-    const current = filters.especialidades;
-    const next = current.includes(value)
-      ? current.filter((e) => e !== value)
-      : [...current, value];
+    const next = filters.especialidades.includes(value)
+      ? filters.especialidades.filter((e) => e !== value)
+      : [...filters.especialidades, value];
     onChange({ ...filters, especialidades: next });
   }
 
@@ -47,8 +50,41 @@ export default function FiltersSidebar({
     onChange({ ...filters, avaliacaoMinima: value });
   }
 
-  function handleCidade(value: string) {
-    onChange({ ...filters, cidade: value });
+  async function detectarLocalizacao() {
+    if (!navigator.geolocation) {
+      setErroGeo("Seu navegador não suporta geolocalização.");
+      return;
+    }
+    setDetectando(true);
+    setErroGeo("");
+    try {
+      const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          timeout: 10000,
+        })
+      );
+      const { latitude, longitude } = pos.coords;
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
+        { headers: { "Accept-Language": "pt-BR" } }
+      );
+      const data = await res.json();
+      const cidade =
+        data.address?.city ||
+        data.address?.town ||
+        data.address?.municipality ||
+        data.address?.county ||
+        "";
+      if (cidade) {
+        onChange({ ...filters, localizacao: cidade });
+      } else {
+        setErroGeo("Não foi possível identificar sua cidade.");
+      }
+    } catch {
+      setErroGeo("Permissão negada. Digite sua cidade manualmente.");
+    } finally {
+      setDetectando(false);
+    }
   }
 
   return (
@@ -142,18 +178,59 @@ export default function FiltersSidebar({
           </div>
         </fieldset>
 
-        {/* Cidade */}
+        {/* Localização */}
         <div className="mt-6">
-          <label className="text-sm font-medium text-foreground">Cidade</label>
-          <div className="relative mt-2">
-            <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Ex: São Paulo"
-              value={filters.cidade}
-              onChange={(e) => handleCidade(e.target.value)}
-              className="pl-8"
-            />
-          </div>
+          <p className="text-sm font-medium text-foreground">{"Localização"}</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            {"Online atendem qualquer cidade · Presencial filtra pela sua cidade"}
+          </p>
+
+          {filters.localizacao ? (
+            <div className="mt-2 flex items-center gap-2 rounded-lg border border-nutri-green/30 bg-nutri-green/5 px-3 py-2">
+              <LocateFixed className="h-4 w-4 shrink-0 text-nutri-green" />
+              <span className="flex-1 truncate text-sm text-foreground">
+                {filters.localizacao}
+              </span>
+              <button
+                onClick={() => onChange({ ...filters, localizacao: "" })}
+                className="text-muted-foreground transition-colors hover:text-foreground"
+                aria-label="Limpar localização"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          ) : (
+            <div className="mt-2 flex flex-col gap-2">
+              <button
+                onClick={detectarLocalizacao}
+                disabled={detectando}
+                className="flex items-center justify-center gap-2 rounded-lg border border-dashed border-nutri-green/40 py-2 text-sm text-nutri-green transition-colors hover:bg-nutri-green/5 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {detectando ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <LocateFixed className="h-4 w-4" />
+                )}
+                {detectando ? "Detectando..." : "Usar minha localização"}
+              </button>
+
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder="Ex: São Paulo"
+                  value={filters.localizacao}
+                  onChange={(e) =>
+                    onChange({ ...filters, localizacao: e.target.value })
+                  }
+                  className="pl-8"
+                />
+              </div>
+            </div>
+          )}
+
+          {erroGeo && (
+            <p className="mt-1.5 text-xs text-red-500">{erroGeo}</p>
+          )}
         </div>
       </div>
     </aside>
