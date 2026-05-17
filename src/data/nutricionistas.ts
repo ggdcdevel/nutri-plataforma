@@ -1,4 +1,4 @@
-import type { Nutricionista } from "@/components/nutricionistas/nutricionista-card";
+import type { Nutricionista } from "@/lib/types";
 
 function toSlug(name: string) {
   return name
