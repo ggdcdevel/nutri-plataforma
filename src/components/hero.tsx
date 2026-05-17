@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import CityAutocomplete from "@/components/ui/city-autocomplete";
+import { CIDADES } from "@/lib/cidades";
 import { Search, MapPin, Loader2 } from "lucide-react";
 
 const tags = [
@@ -13,6 +15,10 @@ const tags = [
   "Diabetes",
   "Gestação",
 ];
+
+function norm(str: string) {
+  return str.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+}
 
 export default function Hero() {
   const [busca, setBusca] = useState("");
@@ -44,9 +50,12 @@ export default function Hero() {
         data.address?.municipality ||
         data.address?.county ||
         "";
-      if (c) setCidade(c);
+      if (c) {
+        const match = CIDADES.find((o) => norm(o.cidade) === norm(c));
+        setCidade(match ? `${match.cidade}, ${match.estado}` : c);
+      }
     } catch {
-      // silent fail — user can type manually
+      // silent fail — user pode digitar manualmente
     } finally {
       setDetectando(false);
     }
@@ -77,7 +86,7 @@ export default function Hero() {
       </p>
 
       {/* Search bar */}
-      <div className="mt-10 flex w-full max-w-2xl flex-col overflow-hidden rounded-xl border border-border bg-background shadow-sm sm:flex-row">
+      <div className="mt-10 flex w-full max-w-2xl flex-col rounded-xl border border-border bg-background shadow-sm sm:flex-row">
         {/* Especialidade */}
         <div className="flex flex-1 items-center gap-3 px-4 sm:border-r sm:border-border">
           <Search className="h-5 w-5 shrink-0 text-nutri-muted" />
@@ -95,25 +104,28 @@ export default function Hero() {
         <div className="h-px bg-border sm:hidden" />
 
         {/* Cidade */}
-        <div className="flex w-full items-center gap-2 px-4 sm:w-52">
+        <div className="flex w-full items-center gap-2 px-4 sm:w-56">
           {detectando ? (
             <Loader2 className="h-5 w-5 shrink-0 animate-spin text-nutri-muted" />
           ) : (
             <MapPin className="h-5 w-5 shrink-0 text-nutri-muted" />
           )}
-          <input
-            type="text"
-            placeholder={detectando ? "Detectando..." : "Sua cidade..."}
+          <CityAutocomplete
             value={cidade}
-            onChange={(e) => setCidade(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleBusca()}
-            className="w-full py-3.5 text-sm text-nutri-text placeholder:text-nutri-muted focus:outline-none"
+            onChange={setCidade}
+            options={CIDADES}
+            placeholder={detectando ? "Detectando..." : "Sua cidade..."}
+            inputClassName="w-full py-3.5 text-sm text-nutri-text placeholder:text-nutri-muted focus:outline-none bg-transparent"
+            onEnter={handleBusca}
           />
         </div>
 
+        {/* Divisor mobile */}
+        <div className="h-px bg-border sm:hidden" />
+
         <Button
           onClick={handleBusca}
-          className="h-auto rounded-none bg-nutri-green px-6 py-3.5 text-white hover:bg-nutri-green-dark sm:rounded-r-xl"
+          className="rounded-b-xl bg-nutri-green px-6 py-3.5 text-white hover:bg-nutri-green-dark sm:rounded-none sm:rounded-r-xl"
         >
           Buscar
         </Button>

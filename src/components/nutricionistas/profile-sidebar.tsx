@@ -72,7 +72,7 @@ export function ProfileSidebar({ nutri }: { nutri: NutricionistaProfile }) {
           <div className="flex items-center gap-2.5">
             <MapPin className="h-4 w-4 shrink-0 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">
-              {nutri.cidade}
+              {nutri.cidade}{nutri.estado ? `, ${nutri.estado}` : ""}
             </span>
           </div>
           <div className="flex items-center gap-2.5">

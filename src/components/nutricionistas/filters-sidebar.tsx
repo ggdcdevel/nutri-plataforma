@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Search, LocateFixed, Loader2, X } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { LocateFixed, Loader2 } from "lucide-react";
+import CityAutocomplete from "@/components/ui/city-autocomplete";
+import { CIDADES } from "@/lib/cidades";
 
 type Filters = {
   modalidade: string;
@@ -26,6 +27,10 @@ const especialidadesList = [
   "Oncologia",
   "Saúde intestinal",
 ];
+
+function norm(str: string) {
+  return str.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+}
 
 export default function FiltersSidebar({
   filters,
@@ -76,7 +81,11 @@ export default function FiltersSidebar({
         data.address?.county ||
         "";
       if (cidade) {
-        onChange({ ...filters, localizacao: cidade });
+        const match = CIDADES.find((c) => norm(c.cidade) === norm(cidade));
+        onChange({
+          ...filters,
+          localizacao: match ? `${match.cidade}, ${match.estado}` : cidade,
+        });
       } else {
         setErroGeo("Cidade não identificada. Digite manualmente.");
       }
@@ -197,26 +206,13 @@ export default function FiltersSidebar({
               )}
               {detectando ? "Detectando..." : "Usar minha localização"}
             </button>
-            <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Ex: São Paulo"
-                value={filters.localizacao}
-                onChange={(e) =>
-                  onChange({ ...filters, localizacao: e.target.value })
-                }
-                className="pl-8 pr-8"
-              />
-              {filters.localizacao && (
-                <button
-                  onClick={() => onChange({ ...filters, localizacao: "" })}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
-                  aria-label="Limpar localização"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              )}
-            </div>
+            <CityAutocomplete
+              value={filters.localizacao}
+              onChange={(v) => onChange({ ...filters, localizacao: v })}
+              options={CIDADES}
+              placeholder="Ex: São Paulo, SP"
+              inputClassName="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            />
           </div>
           {erroGeo && (
             <p className="mt-1.5 text-xs text-red-500">{erroGeo}</p>

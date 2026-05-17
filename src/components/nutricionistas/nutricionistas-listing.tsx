@@ -69,7 +69,11 @@ export default function NutricionistasListing({
 
     if (filters.localizacao.trim()) {
       const locQ = norm(filters.localizacao);
-      result = result.filter((n) => norm(n.cidade).includes(locQ));
+      result = result.filter((n) => {
+        const cityOnly = norm(n.cidade);
+        const cityFull = n.estado ? norm(`${n.cidade}, ${n.estado}`) : cityOnly;
+        return cityFull.includes(locQ) || cityOnly.includes(locQ);
+      });
     }
 
     if (ordenacao === "avaliados") {

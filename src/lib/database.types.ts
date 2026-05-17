@@ -22,6 +22,7 @@ export type Database = {
           nome: string;
           crn: string;
           cidade: string;
+          estado: string;
           modalidade: "Online" | "Presencial";
           especialidades: string[];
           nota: number;

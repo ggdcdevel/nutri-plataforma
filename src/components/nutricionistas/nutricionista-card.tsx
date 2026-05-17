@@ -58,7 +58,7 @@ export default function NutricionistaCard({
           {/* Location + modality */}
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <span className="text-sm text-muted-foreground">
-              {nutri.cidade}
+              {nutri.cidade}{nutri.estado ? `, ${nutri.estado}` : ""}
             </span>
             <Badge
               className={

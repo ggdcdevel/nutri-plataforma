@@ -5,6 +5,7 @@ export type Nutricionista = {
   crn: string;
   modalidade: "Online" | "Presencial";
   cidade: string;
+  estado: string;
   especialidades: string[];
   nota: number;
   avaliacoes: number;
