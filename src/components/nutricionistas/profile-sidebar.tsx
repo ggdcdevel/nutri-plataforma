@@ -9,7 +9,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import type { NutricionistaProfile } from "@/data/nutricionistas-profiles";
+import type { NutricionistaProfile } from "@/lib/types";
 
 export function ProfileSidebar({ nutri }: { nutri: NutricionistaProfile }) {
   return (

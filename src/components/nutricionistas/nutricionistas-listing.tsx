@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import FiltersSidebar from "@/components/nutricionistas/filters-sidebar";
 import NutricionistaCard from "@/components/nutricionistas/nutricionista-card";
-import { nutricionistas } from "@/data/nutricionistas";
+import type { Nutricionista } from "@/lib/types";
 
 type Filters = {
   modalidade: string;
@@ -24,7 +24,11 @@ const defaultFilters: Filters = {
 
 type Ordenacao = "relevantes" | "avaliados" | "preco";
 
-export default function NutricionistasListing() {
+export default function NutricionistasListing({
+  nutricionistas,
+}: {
+  nutricionistas: Nutricionista[];
+}) {
   const [filters, setFilters] = useState<Filters>(defaultFilters);
   const [busca, setBusca] = useState("");
   const [ordenacao, setOrdenacao] = useState<Ordenacao>("relevantes");
@@ -32,7 +36,6 @@ export default function NutricionistasListing() {
   const filtered = useMemo(() => {
     let result = [...nutricionistas];
 
-    // Busca por nome ou especialidade
     if (busca.trim()) {
       const q = busca.toLowerCase();
       result = result.filter(
@@ -42,31 +45,26 @@ export default function NutricionistasListing() {
       );
     }
 
-    // Modalidade
     if (filters.modalidade !== "Todos") {
       result = result.filter((n) => n.modalidade === filters.modalidade);
     }
 
-    // Especialidades
     if (filters.especialidades.length > 0) {
       result = result.filter((n) =>
         filters.especialidades.some((e) => n.especialidades.includes(e))
       );
     }
 
-    // Avaliação mínima
     const minRating = parseFloat(filters.avaliacaoMinima);
     if (minRating > 0) {
       result = result.filter((n) => n.nota >= minRating);
     }
 
-    // Cidade
     if (filters.cidade.trim()) {
       const cidadeQ = filters.cidade.toLowerCase();
       result = result.filter((n) => n.cidade.toLowerCase().includes(cidadeQ));
     }
 
-    // Ordenação
     if (ordenacao === "avaliados") {
       result.sort((a, b) => b.nota - a.nota);
     } else if (ordenacao === "preco") {
@@ -74,7 +72,7 @@ export default function NutricionistasListing() {
     }
 
     return result;
-  }, [busca, filters, ordenacao]);
+  }, [busca, filters, ordenacao, nutricionistas]);
 
   function handleClearFilters() {
     setFilters(defaultFilters);
