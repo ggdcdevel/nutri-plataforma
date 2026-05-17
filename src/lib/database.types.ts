@@ -30,13 +30,30 @@ export type Database = {
           origem: string;
           created_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["leads_nutricionistas"]["Row"], "id" | "created_at" | "status" | "origem"> & {
+        Insert: {
           id?: string;
-          created_at?: string;
+          nome: string;
+          email: string;
+          whatsapp: string;
+          crn: string;
+          cidade: string;
+          modalidade: string;
+          especialidades: string[];
           status?: string;
           origem?: string;
+          created_at?: string;
         };
-        Update: Partial<Database["public"]["Tables"]["leads_nutricionistas"]["Insert"]>;
+        Update: Partial<{
+          nome: string;
+          email: string;
+          whatsapp: string;
+          crn: string;
+          cidade: string;
+          modalidade: string;
+          especialidades: string[];
+          status: string;
+          origem: string;
+        }>;
       };
       nutricionistas: {
         Row: {
