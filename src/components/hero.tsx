@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search } from "lucide-react";
+import { Search, MapPin, Loader2 } from "lucide-react";
 
 const tags = [
   "Emagrecimento",
@@ -16,44 +16,104 @@ const tags = [
 
 export default function Hero() {
   const [busca, setBusca] = useState("");
+  const [cidade, setCidade] = useState("");
+  const [detectando, setDetectando] = useState(false);
   const router = useRouter();
 
+  useEffect(() => {
+    detectarLocalizacao();
+  }, []);
+
+  async function detectarLocalizacao() {
+    if (!navigator.geolocation) return;
+    setDetectando(true);
+    try {
+      const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          timeout: 10000,
+        })
+      );
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`,
+        { headers: { "Accept-Language": "pt-BR" } }
+      );
+      const data = await res.json();
+      const c =
+        data.address?.city ||
+        data.address?.town ||
+        data.address?.municipality ||
+        data.address?.county ||
+        "";
+      if (c) setCidade(c);
+    } catch {
+      // silent fail — user can type manually
+    } finally {
+      setDetectando(false);
+    }
+  }
+
   function handleBusca() {
-    const q = busca.trim();
-    router.push(
-      q ? `/nutricionistas?busca=${encodeURIComponent(q)}` : "/nutricionistas"
-    );
+    const params = new URLSearchParams();
+    if (busca.trim()) params.set("busca", busca.trim());
+    if (cidade.trim()) params.set("cidade", cidade.trim());
+    const qs = params.toString();
+    router.push(`/nutricionistas${qs ? "?" + qs : ""}`);
   }
 
   function handleTag(tag: string) {
-    router.push(`/nutricionistas?busca=${encodeURIComponent(tag)}`);
+    const params = new URLSearchParams();
+    params.set("busca", tag);
+    if (cidade.trim()) params.set("cidade", cidade.trim());
+    router.push(`/nutricionistas?${params.toString()}`);
   }
 
   return (
-    <section className="flex flex-col items-center px-6 pb-20 pt-32 text-center md:pt-40 md:pb-28">
-      <h1 className="max-w-3xl text-4xl font-bold leading-tight tracking-tight text-nutri-text text-balance md:text-5xl lg:text-6xl">
+    <section className="flex flex-col items-center px-6 pb-20 pt-32 text-center md:pb-28 md:pt-40">
+      <h1 className="max-w-3xl text-balance text-4xl font-bold leading-tight tracking-tight text-nutri-text md:text-5xl lg:text-6xl">
         Encontre seu nutricionista ideal, online ou presencial
       </h1>
-      <p className="mt-5 max-w-xl text-lg leading-relaxed text-nutri-muted text-pretty">
+      <p className="mt-5 max-w-xl text-pretty text-lg leading-relaxed text-nutri-muted">
         Conectamos você a profissionais verificados em todo o Brasil.
       </p>
 
       {/* Search bar */}
-      <div className="mt-10 flex w-full max-w-xl items-center gap-0 overflow-hidden rounded-xl border border-border bg-background shadow-sm">
-        <div className="flex flex-1 items-center gap-3 px-4">
+      <div className="mt-10 flex w-full max-w-2xl flex-col overflow-hidden rounded-xl border border-border bg-background shadow-sm sm:flex-row">
+        {/* Especialidade */}
+        <div className="flex flex-1 items-center gap-3 px-4 sm:border-r sm:border-border">
           <Search className="h-5 w-5 shrink-0 text-nutri-muted" />
           <input
             type="text"
-            placeholder="Busque por especialidade ou cidade..."
+            placeholder="Especialidade ou nome..."
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleBusca()}
             className="w-full py-3.5 text-sm text-nutri-text placeholder:text-nutri-muted focus:outline-none"
           />
         </div>
+
+        {/* Divisor mobile */}
+        <div className="h-px bg-border sm:hidden" />
+
+        {/* Cidade */}
+        <div className="flex w-full items-center gap-2 px-4 sm:w-52">
+          {detectando ? (
+            <Loader2 className="h-5 w-5 shrink-0 animate-spin text-nutri-muted" />
+          ) : (
+            <MapPin className="h-5 w-5 shrink-0 text-nutri-muted" />
+          )}
+          <input
+            type="text"
+            placeholder={detectando ? "Detectando..." : "Sua cidade..."}
+            value={cidade}
+            onChange={(e) => setCidade(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleBusca()}
+            className="w-full py-3.5 text-sm text-nutri-text placeholder:text-nutri-muted focus:outline-none"
+          />
+        </div>
+
         <Button
           onClick={handleBusca}
-          className="h-full rounded-none bg-nutri-green px-6 text-white hover:bg-nutri-green-dark"
+          className="h-auto rounded-none bg-nutri-green px-6 py-3.5 text-white hover:bg-nutri-green-dark sm:rounded-r-xl"
         >
           Buscar
         </Button>

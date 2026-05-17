@@ -182,7 +182,7 @@ export default function FiltersSidebar({
         <div className="mt-6">
           <p className="text-sm font-medium text-foreground">{"Localização"}</p>
           <p className="mt-0.5 text-xs text-muted-foreground">
-            {"Online atendem qualquer cidade · Presencial filtra pela sua cidade"}
+            {"Filtra por cidade de atuação. Use Modalidade para ver só online."}
           </p>
           <div className="mt-2 flex flex-col gap-2">
             <button

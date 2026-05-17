@@ -13,9 +13,9 @@ export const metadata: Metadata = {
 export default async function NutricionistasPage({
   searchParams,
 }: {
-  searchParams: Promise<{ busca?: string }>;
+  searchParams: Promise<{ busca?: string; cidade?: string }>;
 }) {
-  const { busca } = await searchParams;
+  const { busca, cidade } = await searchParams;
   const nutricionistas = await getNutricionistas();
 
   return (
@@ -34,6 +34,7 @@ export default async function NutricionistasPage({
         <NutricionistasListing
           nutricionistas={nutricionistas}
           initialBusca={busca ?? ""}
+          initialLocalizacao={cidade ?? ""}
         />
       </main>
       <Footer />
