@@ -23,7 +23,7 @@ export default function Navbar() {
             Como funciona
           </a>
           <a
-            href="#para-nutricionistas"
+            href="/cadastro-nutricionista?origem=navbar"
             className="text-sm font-medium text-nutri-muted transition-colors hover:text-nutri-text"
           >
             Para nutricionistas
@@ -67,7 +67,7 @@ export default function Navbar() {
               Como funciona
             </a>
             <a
-              href="#para-nutricionistas"
+              href="/cadastro-nutricionista?origem=navbar"
               className="text-sm font-medium text-nutri-muted transition-colors hover:text-nutri-text"
               onClick={() => setMobileOpen(false)}
             >

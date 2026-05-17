@@ -27,12 +27,14 @@ export type Database = {
           modalidade: string;
           especialidades: string[];
           status: string;
+          origem: string;
           created_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["leads_nutricionistas"]["Row"], "id" | "created_at" | "status"> & {
+        Insert: Omit<Database["public"]["Tables"]["leads_nutricionistas"]["Row"], "id" | "created_at" | "status" | "origem"> & {
           id?: string;
           created_at?: string;
           status?: string;
+          origem?: string;
         };
         Update: Partial<Database["public"]["Tables"]["leads_nutricionistas"]["Insert"]>;
       };

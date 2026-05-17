@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/lib/supabase";
@@ -26,6 +26,7 @@ function maskWhatsapp(value: string) {
 }
 
 export default function CadastroNutricionista() {
+  const [origem, setOrigem] = useState("direto");
   const [form, setForm] = useState({
     nome: "",
     email: "",
@@ -38,6 +39,12 @@ export default function CadastroNutricionista() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const o = params.get("origem");
+    if (o) setOrigem(o);
+  }, []);
 
   function handleEspecialidade(value: string) {
     setForm((f) => ({
@@ -63,6 +70,7 @@ export default function CadastroNutricionista() {
         cidade: form.cidade,
         modalidade: form.modalidade,
         especialidades: form.especialidades,
+        origem,
       });
 
     setLoading(false);

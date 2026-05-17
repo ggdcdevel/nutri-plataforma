@@ -23,13 +23,15 @@ export default function ForNutritionists() {
               </li>
             ))}
           </ul>
-          <Button
-            variant="outline"
-            size="lg"
-            className="w-fit border-nutri-green text-nutri-green hover:bg-nutri-green/10 hover:text-nutri-green"
-          >
-            Cadastre-se como profissional
-          </Button>
+          <a href="/cadastro-nutricionista?origem=organico">
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-fit border-nutri-green text-nutri-green hover:bg-nutri-green/10 hover:text-nutri-green"
+            >
+              Cadastre-se como profissional
+            </Button>
+          </a>
         </div>
       </div>
     </section>

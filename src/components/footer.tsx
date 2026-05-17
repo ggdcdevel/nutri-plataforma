@@ -1,5 +1,6 @@
 const links = [
   { label: "Sobre", href: "#" },
+  { label: "Para nutricionistas", href: "/cadastro-nutricionista?origem=footer" },
   { label: "Contato", href: "#" },
   { label: "Termos", href: "#" },
   { label: "Privacidade", href: "#" },
