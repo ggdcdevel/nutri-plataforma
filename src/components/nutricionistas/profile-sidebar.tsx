@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Clock,
   Video,
@@ -10,8 +12,18 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import type { NutricionistaProfile } from "@/lib/types";
+import { useAuth } from "@/lib/auth-context";
 
 export function ProfileSidebar({ nutri }: { nutri: NutricionistaProfile }) {
+  const { user, openAuthModal } = useAuth();
+
+  function handleAgendar() {
+    if (!user) {
+      openAuthModal();
+    }
+    // TODO: implementar fluxo real de agendamento quando autenticado
+  }
+
   return (
     <div className="flex flex-col gap-4">
       {/* Agendar card */}
@@ -35,7 +47,10 @@ export function ProfileSidebar({ nutri }: { nutri: NutricionistaProfile }) {
           </Badge>
         </div>
 
-        <Button className="mt-5 w-full bg-nutri-green text-white hover:bg-nutri-green-dark">
+        <Button
+          onClick={handleAgendar}
+          className="mt-5 w-full bg-nutri-green text-white hover:bg-nutri-green-dark"
+        >
           Solicitar agendamento
         </Button>
 
@@ -63,7 +78,7 @@ export function ProfileSidebar({ nutri }: { nutri: NutricionistaProfile }) {
         </div>
       </div>
 
-      {/* Informacoes card */}
+      {/* Informações card */}
       <div className="rounded-xl border border-border bg-card p-6">
         <h3 className="text-base font-semibold text-foreground">
           {"Informações"}
