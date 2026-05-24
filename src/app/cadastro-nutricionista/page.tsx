@@ -229,8 +229,11 @@ export default function CadastroNutricionista() {
 
                   <div className="flex flex-col gap-1.5">
                     <label className="text-sm font-medium text-nutri-text">
-                      WhatsApp *
+                      WhatsApp para agendamentos *
                     </label>
+                    <p className="text-xs text-nutri-muted -mt-0.5">
+                      Número que os pacientes usarão para marcar consultas via WhatsApp
+                    </p>
                     <Input
                       required
                       type="tel"
