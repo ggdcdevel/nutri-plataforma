@@ -10,10 +10,13 @@ import {
 import type { User, Session } from "@supabase/supabase-js";
 import { supabase } from "./supabase";
 
+export type UserRole = "paciente" | "nutricionista" | "admin" | null;
+
 type AuthContextType = {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  role: UserRole;
   isModalOpen: boolean;
   openAuthModal: () => void;
   closeAuthModal: () => void;
@@ -26,18 +29,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState<UserRole>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  async function fetchRole(userId: string) {
+    try {
+      const { data } = await (supabase as any)
+        .from("pacientes")
+        .select("role")
+        .eq("id", userId)
+        .single();
+      setRole((data?.role as UserRole) ?? "paciente");
+    } catch {
+      setRole("paciente");
+    }
+  }
 
   useEffect(() => {
     // Flag: só redireciona ao /minha-conta se o usuário não estava logado antes.
     // Evita loop infinito — Supabase dispara SIGNED_IN mesmo com sessão já existente.
     let shouldRedirectOnSignIn = false;
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      if (session?.user) {
+        await fetchRole(session.user.id);
+      } else {
+        setRole(null);
+      }
       setLoading(false);
-      // Se não há sessão ativa, o próximo SIGNED_IN é um login real → redireciona
       if (!session) {
         shouldRedirectOnSignIn = true;
       }
@@ -48,18 +69,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
-      setLoading(false);
 
-      if (event === "SIGNED_IN" && shouldRedirectOnSignIn) {
-        shouldRedirectOnSignIn = false;
-        setIsModalOpen(false);
-        window.location.href = "/minha-conta";
+      if (event === "SIGNED_IN") {
+        if (session?.user) fetchRole(session.user.id);
+        if (shouldRedirectOnSignIn) {
+          shouldRedirectOnSignIn = false;
+          setIsModalOpen(false);
+          window.location.href = "/minha-conta";
+        }
       }
 
       if (event === "SIGNED_OUT") {
-        // Próximo login deve redirecionar
+        setRole(null);
         shouldRedirectOnSignIn = true;
       }
+
+      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
@@ -78,6 +103,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         session,
         loading,
+        role,
         isModalOpen,
         openAuthModal,
         closeAuthModal,

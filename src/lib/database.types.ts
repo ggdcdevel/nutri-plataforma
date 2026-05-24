@@ -16,6 +16,55 @@ export type AvaliacaoDetalhada = {
 export type Database = {
   public: {
     Tables: {
+      pacientes: {
+        Row: {
+          id: string;
+          nome: string | null;
+          email: string | null;
+          avatar_url: string | null;
+          role: string;
+          created_at: string;
+        };
+        Insert: {
+          id: string;
+          nome?: string | null;
+          email?: string | null;
+          avatar_url?: string | null;
+          role?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          nome?: string | null;
+          email?: string | null;
+          avatar_url?: string | null;
+          role?: string;
+          created_at?: string;
+        };
+      };
+      page_views: {
+        Row: {
+          id: string;
+          nutricionista_id: string | null;
+          pagina: string;
+          origem: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          nutricionista_id?: string | null;
+          pagina: string;
+          origem?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          nutricionista_id?: string | null;
+          pagina?: string;
+          origem?: string | null;
+          created_at?: string;
+        };
+      };
       leads_nutricionistas: {
         Row: {
           id: string;
@@ -100,6 +149,9 @@ export type Database = {
           membro_desde: number | null;
           avaliacoes_detalhadas: AvaliacaoDetalhada[];
           whatsapp: string | null;
+          status: string;
+          destaque: boolean;
+          aprovado_em: string | null;
           created_at: string;
         };
         Insert: {
@@ -123,6 +175,9 @@ export type Database = {
           membro_desde?: number | null;
           avaliacoes_detalhadas: AvaliacaoDetalhada[];
           whatsapp?: string | null;
+          status?: string;
+          destaque?: boolean;
+          aprovado_em?: string | null;
           created_at?: string;
         };
         Update: {
@@ -146,6 +201,9 @@ export type Database = {
           membro_desde?: number | null;
           avaliacoes_detalhadas?: AvaliacaoDetalhada[];
           whatsapp?: string | null;
+          status?: string;
+          destaque?: boolean;
+          aprovado_em?: string | null;
           created_at?: string;
         };
       };
