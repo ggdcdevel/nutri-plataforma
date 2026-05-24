@@ -29,10 +29,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
+    // Flag: só redireciona ao /minha-conta se o usuário não estava logado antes.
+    // Evita loop infinito — Supabase dispara SIGNED_IN mesmo com sessão já existente.
+    let shouldRedirectOnSignIn = false;
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      // Se não há sessão ativa, o próximo SIGNED_IN é um login real → redireciona
+      if (!session) {
+        shouldRedirectOnSignIn = true;
+      }
     });
 
     const {
@@ -41,9 +49,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
-      if (event === "SIGNED_IN") {
+
+      if (event === "SIGNED_IN" && shouldRedirectOnSignIn) {
+        shouldRedirectOnSignIn = false;
         setIsModalOpen(false);
         window.location.href = "/minha-conta";
+      }
+
+      if (event === "SIGNED_OUT") {
+        // Próximo login deve redirecionar
+        shouldRedirectOnSignIn = true;
       }
     });
 
