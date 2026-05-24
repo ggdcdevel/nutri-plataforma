@@ -33,6 +33,7 @@ export default function CadastroNutricionista() {
     whatsapp: "",
     crn: "",
     cidade: "",
+    estado: "",
     modalidade: "Online",
     especialidades: [] as string[],
   });
@@ -68,7 +69,7 @@ export default function CadastroNutricionista() {
         email: form.email,
         whatsapp: form.whatsapp,
         crn: form.crn,
-        cidade: form.cidade,
+        cidade: form.estado ? `${form.cidade}, ${form.estado}` : form.cidade,
         modalidade: form.modalidade,
         especialidades: form.especialidades,
         origem,
@@ -262,18 +263,42 @@ export default function CadastroNutricionista() {
                     />
                   </div>
 
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-sm font-medium text-nutri-text">
-                      Cidade e Estado *
-                    </label>
-                    <Input
-                      required
-                      value={form.cidade}
-                      onChange={(e) =>
-                        setForm((f) => ({ ...f, cidade: e.target.value }))
-                      }
-                      placeholder="São Paulo, SP"
-                    />
+                  <div className="flex gap-3">
+                    <div className="flex flex-1 flex-col gap-1.5">
+                      <label className="text-sm font-medium text-nutri-text">
+                        Cidade *
+                      </label>
+                      <Input
+                        required
+                        value={form.cidade}
+                        onChange={(e) =>
+                          setForm((f) => ({ ...f, cidade: e.target.value }))
+                        }
+                        placeholder="São Paulo"
+                      />
+                    </div>
+                    <div className="flex w-28 flex-col gap-1.5">
+                      <label className="text-sm font-medium text-nutri-text">
+                        Estado *
+                      </label>
+                      <select
+                        required
+                        value={form.estado}
+                        onChange={(e) =>
+                          setForm((f) => ({ ...f, estado: e.target.value }))
+                        }
+                        className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+                      >
+                        <option value="">UF</option>
+                        {[
+                          "AC","AL","AP","AM","BA","CE","DF","ES","GO",
+                          "MA","MT","MS","MG","PA","PB","PR","PE","PI",
+                          "RJ","RN","RS","RO","RR","SC","SP","SE","TO",
+                        ].map((uf) => (
+                          <option key={uf} value={uf}>{uf}</option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
 
                   <fieldset>
