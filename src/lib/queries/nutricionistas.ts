@@ -31,6 +31,7 @@ function rowToProfile(row: Row): NutricionistaProfile {
     idiomas: row.idiomas,
     membroDesde: row.membro_desde ?? 0,
     avaliacoesDetalhadas: row.avaliacoes_detalhadas,
+    whatsapp: row.whatsapp ?? null,
   };
 }
 

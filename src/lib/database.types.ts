@@ -29,6 +29,13 @@ export type Database = {
           status: string;
           origem: string;
           created_at: string;
+          nutricionista_id: string | null;
+          nutricionista_email: string | null;
+          modalidade_escolhida: string | null;
+          objetivo: string | null;
+          mensagem: string | null;
+          paciente_id: string | null;
+          paciente_email: string | null;
         };
         Insert: {
           id?: string;
@@ -42,6 +49,13 @@ export type Database = {
           status?: string;
           origem?: string;
           created_at?: string;
+          nutricionista_id?: string | null;
+          nutricionista_email?: string | null;
+          modalidade_escolhida?: string | null;
+          objetivo?: string | null;
+          mensagem?: string | null;
+          paciente_id?: string | null;
+          paciente_email?: string | null;
         };
         Update: {
           id?: string;
@@ -55,6 +69,13 @@ export type Database = {
           status?: string;
           origem?: string;
           created_at?: string;
+          nutricionista_id?: string | null;
+          nutricionista_email?: string | null;
+          modalidade_escolhida?: string | null;
+          objetivo?: string | null;
+          mensagem?: string | null;
+          paciente_id?: string | null;
+          paciente_email?: string | null;
         };
       };
       nutricionistas: {
@@ -78,6 +99,7 @@ export type Database = {
           idiomas: string[];
           membro_desde: number | null;
           avaliacoes_detalhadas: AvaliacaoDetalhada[];
+          whatsapp: string | null;
           created_at: string;
         };
         Insert: {
@@ -100,6 +122,7 @@ export type Database = {
           idiomas: string[];
           membro_desde?: number | null;
           avaliacoes_detalhadas: AvaliacaoDetalhada[];
+          whatsapp?: string | null;
           created_at?: string;
         };
         Update: {
@@ -122,6 +145,7 @@ export type Database = {
           idiomas?: string[];
           membro_desde?: number | null;
           avaliacoes_detalhadas?: AvaliacaoDetalhada[];
+          whatsapp?: string | null;
           created_at?: string;
         };
       };

@@ -20,10 +20,12 @@ import {
   addFavorito,
   removeFavorito,
 } from "@/lib/queries/favoritos";
+import { AgendamentoModal } from "@/components/nutricionistas/agendamento-modal";
 
 export function ProfileSidebar({ nutri }: { nutri: NutricionistaProfile }) {
   const { user, openAuthModal } = useAuth();
   const [isFavorited, setIsFavorited] = useState(false);
+  const [agendamentoOpen, setAgendamentoOpen] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -49,14 +51,13 @@ export function ProfileSidebar({ nutri }: { nutri: NutricionistaProfile }) {
     }
   }, [user, isFavorited, nutri.id, openAuthModal]);
 
-  function handleAgendar() {
-    if (!user) {
-      openAuthModal();
-    }
-    // TODO: implementar fluxo real de agendamento quando autenticado
-  }
-
   return (
+    <>
+    <AgendamentoModal
+      nutri={nutri}
+      isOpen={agendamentoOpen}
+      onClose={() => setAgendamentoOpen(false)}
+    />
     <div className="flex flex-col gap-4">
       {/* Agendar card */}
       <div className="rounded-xl border border-border bg-card p-6">
@@ -81,7 +82,7 @@ export function ProfileSidebar({ nutri }: { nutri: NutricionistaProfile }) {
 
         <div className="mt-5 flex gap-2">
           <Button
-            onClick={handleAgendar}
+            onClick={() => setAgendamentoOpen(true)}
             className="flex-1 bg-nutri-green text-white hover:bg-nutri-green-dark"
           >
             Solicitar agendamento
@@ -158,5 +159,6 @@ export function ProfileSidebar({ nutri }: { nutri: NutricionistaProfile }) {
         </div>
       </div>
     </div>
+    </>
   );
 }

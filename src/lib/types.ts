@@ -23,4 +23,5 @@ export type NutricionistaProfile = Nutricionista & {
   idiomas: string[];
   membroDesde: number;
   avaliacoesDetalhadas: AvaliacaoDetalhada[];
+  whatsapp: string | null;
 };
