@@ -37,11 +37,12 @@ export default function Navbar() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <a href="/" className="text-xl font-bold text-nutri-green">
+        {/* Logo */}
+        <a href="/" className="text-xl font-bold text-nutri-green shrink-0">
           NutriMatch
         </a>
 
-        {/* Desktop nav */}
+        {/* Desktop: links centrais */}
         <div className="hidden items-center gap-8 md:flex">
           <a
             href="#como-funciona"
@@ -55,7 +56,16 @@ export default function Navbar() {
           >
             Para nutricionistas
           </a>
+          <a
+            href="/nutricionistas"
+            className="text-sm font-medium text-nutri-muted transition-colors hover:text-nutri-text"
+          >
+            Encontrar nutricionista
+          </a>
+        </div>
 
+        {/* Desktop: auth (lado direito) */}
+        <div className="hidden items-center gap-3 md:flex">
           {!loading && (
             <>
               {user ? (
