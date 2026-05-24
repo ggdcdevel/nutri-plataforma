@@ -1,6 +1,7 @@
 import type { AvaliacaoDetalhada } from "./database.types";
 
 export type Nutricionista = {
+  id: string;
   nome: string;
   crn: string;
   modalidade: "Online" | "Presencial";

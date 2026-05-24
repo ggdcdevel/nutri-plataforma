@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { Search, SearchX, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import FiltersSidebar from "@/components/nutricionistas/filters-sidebar";
 import NutricionistaCard from "@/components/nutricionistas/nutricionista-card";
 import type { Nutricionista } from "@/lib/types";
+import { useAuth } from "@/lib/auth-context";
+import { getFavoritosIds, addFavorito, removeFavorito } from "@/lib/queries/favoritos";
 
 type Filters = {
   modalidade: string;
@@ -30,6 +32,7 @@ export default function NutricionistasListing({
   initialBusca?: string;
   initialLocalizacao?: string;
 }) {
+  const { user, openAuthModal } = useAuth();
   const [filters, setFilters] = useState<Filters>({
     modalidade: "Todos",
     especialidades: [],
@@ -38,6 +41,29 @@ export default function NutricionistasListing({
   });
   const [busca, setBusca] = useState(initialBusca);
   const [ordenacao, setOrdenacao] = useState<Ordenacao>("relevantes");
+  const [favoritoIds, setFavoritoIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (user) {
+      getFavoritosIds(user.id).then((ids) => setFavoritoIds(new Set(ids)));
+    } else {
+      setFavoritoIds(new Set());
+    }
+  }, [user]);
+
+  const handleToggleFavorite = useCallback(async (nutricionistaId: string) => {
+    if (!user) {
+      openAuthModal();
+      return;
+    }
+    if (favoritoIds.has(nutricionistaId)) {
+      setFavoritoIds((prev) => { const next = new Set(prev); next.delete(nutricionistaId); return next; });
+      await removeFavorito(user.id, nutricionistaId);
+    } else {
+      setFavoritoIds((prev) => new Set(prev).add(nutricionistaId));
+      await addFavorito(user.id, nutricionistaId);
+    }
+  }, [user, favoritoIds, openAuthModal]);
 
   const filtered = useMemo(() => {
     let result = [...nutricionistas];
@@ -146,7 +172,13 @@ export default function NutricionistasListing({
         {filtered.length > 0 ? (
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             {filtered.map((nutri, i) => (
-              <NutricionistaCard key={nutri.slug} nutri={nutri} index={i} />
+              <NutricionistaCard
+                key={nutri.slug}
+                nutri={nutri}
+                index={i}
+                isFavorited={favoritoIds.has(nutri.id)}
+                onToggleFavorite={handleToggleFavorite}
+              />
             ))}
           </div>
         ) : (

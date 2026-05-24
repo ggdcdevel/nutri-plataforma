@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect, useCallback } from "react";
 import {
   Clock,
   Video,
@@ -7,15 +8,46 @@ import {
   Monitor,
   Globe,
   CalendarDays,
+  Heart,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import type { NutricionistaProfile } from "@/lib/types";
 import { useAuth } from "@/lib/auth-context";
+import {
+  getFavoritosIds,
+  addFavorito,
+  removeFavorito,
+} from "@/lib/queries/favoritos";
 
 export function ProfileSidebar({ nutri }: { nutri: NutricionistaProfile }) {
   const { user, openAuthModal } = useAuth();
+  const [isFavorited, setIsFavorited] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      getFavoritosIds(user.id).then((ids) =>
+        setIsFavorited(ids.includes(nutri.id))
+      );
+    } else {
+      setIsFavorited(false);
+    }
+  }, [user, nutri.id]);
+
+  const handleToggleFavorite = useCallback(async () => {
+    if (!user) {
+      openAuthModal();
+      return;
+    }
+    if (isFavorited) {
+      setIsFavorited(false);
+      await removeFavorito(user.id, nutri.id);
+    } else {
+      setIsFavorited(true);
+      await addFavorito(user.id, nutri.id);
+    }
+  }, [user, isFavorited, nutri.id, openAuthModal]);
 
   function handleAgendar() {
     if (!user) {
@@ -47,12 +79,27 @@ export function ProfileSidebar({ nutri }: { nutri: NutricionistaProfile }) {
           </Badge>
         </div>
 
-        <Button
-          onClick={handleAgendar}
-          className="mt-5 w-full bg-nutri-green text-white hover:bg-nutri-green-dark"
-        >
-          Solicitar agendamento
-        </Button>
+        <div className="mt-5 flex gap-2">
+          <Button
+            onClick={handleAgendar}
+            className="flex-1 bg-nutri-green text-white hover:bg-nutri-green-dark"
+          >
+            Solicitar agendamento
+          </Button>
+          <button
+            onClick={handleToggleFavorite}
+            aria-label={isFavorited ? "Remover dos favoritos" : "Favoritar"}
+            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border transition-colors ${
+              isFavorited
+                ? "border-rose-200 bg-rose-50 text-rose-500 hover:bg-rose-100"
+                : "border-border bg-card text-muted-foreground hover:border-rose-200 hover:text-rose-500"
+            }`}
+          >
+            <Heart
+              className={`h-4 w-4 ${isFavorited ? "fill-rose-500" : ""}`}
+            />
+          </button>
+        </div>
 
         <p className="mt-3 text-center text-xs text-muted-foreground">
           {"Você será contatado pelo nutricionista para confirmar horário"}

@@ -1,5 +1,7 @@
+"use client";
+
 import Link from "next/link";
-import { Star } from "lucide-react";
+import { Star, Heart } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { Nutricionista } from "@/lib/types";
@@ -21,9 +23,13 @@ const avatarColors = [
 export default function NutricionistaCard({
   nutri,
   index,
+  isFavorited = false,
+  onToggleFavorite,
 }: {
   nutri: Nutricionista;
   index: number;
+  isFavorited?: boolean;
+  onToggleFavorite?: (id: string) => void;
 }) {
   const color = avatarColors[index % avatarColors.length];
 
@@ -49,10 +55,26 @@ export default function NutricionistaCard({
                 {nutri.crn}
               </p>
             </div>
-            <span className="shrink-0 text-base font-bold text-foreground">
-              {"R$ "}
-              {nutri.preco}
-            </span>
+            <div className="flex items-center gap-2 shrink-0">
+              {onToggleFavorite && (
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onToggleFavorite(nutri.id);
+                  }}
+                  aria-label={isFavorited ? "Remover dos favoritos" : "Favoritar"}
+                  className="text-muted-foreground transition-colors hover:text-rose-500"
+                >
+                  <Heart
+                    className={`h-4 w-4 ${isFavorited ? "fill-rose-500 text-rose-500" : ""}`}
+                  />
+                </button>
+              )}
+              <span className="text-base font-bold text-foreground">
+                {"R$ "}
+                {nutri.preco}
+              </span>
+            </div>
           </div>
 
           {/* Location + modality */}

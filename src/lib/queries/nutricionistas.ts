@@ -6,6 +6,7 @@ type Row = Database["public"]["Tables"]["nutricionistas"]["Row"];
 
 function rowToNutricionista(row: Row): Nutricionista {
   return {
+    id: row.id,
     nome: row.nome,
     crn: row.crn,
     cidade: row.cidade,
@@ -37,7 +38,7 @@ export async function getNutricionistas(): Promise<Nutricionista[]> {
   const { data, error } = await supabase
     .from("nutricionistas")
     .select(
-      "nome, crn, cidade, estado, modalidade, especialidades, nota, avaliacoes, preco, slug"
+      "id, nome, crn, cidade, estado, modalidade, especialidades, nota, avaliacoes, preco, slug"
     )
     .order("nota", { ascending: false });
 
