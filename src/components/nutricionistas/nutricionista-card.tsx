@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Star, Heart } from "lucide-react";
+import { Star, Heart, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { Nutricionista } from "@/lib/types";
@@ -34,7 +34,15 @@ export default function NutricionistaCard({
   const color = avatarColors[index % avatarColors.length];
 
   return (
-    <div className="group flex flex-col rounded-xl border border-border bg-card p-5 transition-colors hover:border-nutri-green/40">
+    <div className={`group relative flex flex-col rounded-xl border bg-card p-5 transition-colors hover:border-nutri-green/40 ${nutri.destaque ? "border-amber-300 shadow-sm shadow-amber-100" : "border-border"}`}>
+      {/* Badge destaque */}
+      {nutri.destaque && (
+        <span className="absolute -top-2.5 left-4 flex items-center gap-1 rounded-full bg-amber-400 px-2.5 py-0.5 text-xs font-semibold text-white shadow-sm">
+          <Sparkles className="h-3 w-3" />
+          Destaque
+        </span>
+      )}
+
       {/* Top row */}
       <div className="flex items-start gap-4">
         {/* Avatar */}

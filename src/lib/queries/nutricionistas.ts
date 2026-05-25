@@ -17,6 +17,7 @@ function rowToNutricionista(row: Row): Nutricionista {
     avaliacoes: row.avaliacoes,
     preco: row.preco,
     slug: row.slug,
+    destaque: (row as any).destaque ?? false,
   };
 }
 
@@ -39,8 +40,9 @@ export async function getNutricionistas(): Promise<Nutricionista[]> {
   const { data, error } = await supabase
     .from("nutricionistas")
     .select(
-      "id, nome, crn, cidade, estado, modalidade, especialidades, nota, avaliacoes, preco, slug"
+      "id, nome, crn, cidade, estado, modalidade, especialidades, nota, avaliacoes, preco, slug, destaque"
     )
+    .order("destaque", { ascending: false })
     .order("nota", { ascending: false });
 
   if (error) throw new Error(error.message);

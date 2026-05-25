@@ -12,6 +12,7 @@ export type Nutricionista = {
   avaliacoes: number;
   preco: number;
   slug: string;
+  destaque?: boolean;
 };
 
 export type NutricionistaProfile = Nutricionista & {
